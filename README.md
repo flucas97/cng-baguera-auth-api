@@ -1,1 +1,1 @@
-# (CNG) ChecknoGreen Baguera Auth Gateway API
+# {CNG} Baguera Auth Gateway API

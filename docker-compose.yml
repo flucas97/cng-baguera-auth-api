@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  api:
+    image: golang:1.13
+    volumes:
+      - .:/app/auth
+    working_dir: /app/auth
+    env_file:
+      - development.env
+    command: go run . -v
+    ports:
+      - "8082:8082"
+
+networks:
+  default:
+    driver: bridge

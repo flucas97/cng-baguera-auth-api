@@ -3,6 +3,7 @@ package auth_service
 import (
 	"github.com/flucas97/cng/cng-baguera-auth-api/domain/account"
 	"github.com/flucas97/cng/cng-baguera-auth-api/domain/auth"
+	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
 )
 
 var (
@@ -10,15 +11,16 @@ var (
 )
 
 type authServiceInterface interface {
-	New(account.Login)
+	New(account.Login) (string, *error_factory.RestErr)
 }
 
 type authService struct{}
 
-func (au *authService) New(account account.Login) {
-	token, err := auth.New(account.Name)
+func (au *authService) New(account account.Login) (string, *error_factory.RestErr) {
+	auth := auth.New(account.Name)
+	token, err := auth.GenerateToken()
 	if err != nil {
-
+		return "", err
 	}
-	_ = token
+	return token, nil
 }

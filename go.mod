@@ -7,5 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-redis/redis/v8 v8.0.0-beta.7 // indirect
 	github.com/gomodule/redigo v1.8.2 // indirect
+	github.com/google/uuid v1.1.1 // indirect
+	github.com/satori/go.uuid v1.2.0 // indirect
 	go.uber.org/zap v1.15.0
 )

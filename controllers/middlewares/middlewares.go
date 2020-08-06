@@ -1,7 +1,16 @@
 package middlewares
 
+import (
+	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/gateway"
+	"github.com/gin-gonic/gin"
+)
+
+func Middleware(c *gin.Context) {
+	gateway.Entry(c)
+}
+
 /*
-	// ROUTES
+	// middlewares
 
 	request has a jwt in a header or cookie?
 	- no -> redirect to /login
@@ -13,17 +22,9 @@ package middlewares
 			exists and if it is equal of what we have
 
 			- yes ->
-				is GET? AND	route / login or /register?
-					- yes -> redirect to / (already registered)
-			- no -> IS GET?
-					- yes -> redirect to login and clear this token
-					- no ->
-			- yes ->
-				route is / login or /register?
-					- yes -> redirect to / (already registered)
-					- no -> keep flow if success
-						yes -> INSERT into Redis (NAME/TOKEN)
-						no -> failed register
-			- no -> redirect to login and clear this token
+					gateway.Entry(c gin.router) // load routes
+			- no ->
+				redirect to login and clear this token
+
 
 */

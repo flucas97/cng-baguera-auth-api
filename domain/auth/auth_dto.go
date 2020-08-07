@@ -21,7 +21,7 @@ func New(name string) *auth {
 	return au
 }
 
-func (au *auth) GenerateToken() (string, *error_factory.RestErr) {
+func (au *auth) GenerateJWT() (string, *error_factory.RestErr) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["account_name"] = au.Name
@@ -49,4 +49,10 @@ func GetJWT(reqToken string, claims jwt.MapClaims) (*jwt.Token, error) {
 		fmt.Println("error")
 	}
 	return token, nil
+}
+
+func ValidateJWT(jwt *jwt.Token) string {
+	for key, val := range jwt.Claims {
+		fmt.Printf("Key: %v, value: %v\n", key, val)
+	}
 }

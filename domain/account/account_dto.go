@@ -1,6 +1,6 @@
 package account
 
 type Login struct {
-	Name     string `json:"name"`
+	NickName string `json:"nick_name"`
 	Password string `json:"password"`
 }

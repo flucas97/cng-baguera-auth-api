@@ -16,6 +16,11 @@ func Entry(c *gin.Context) {
 		reqToken = c.Request.Header["Authorization"]
 	)
 
+	switch c.Request.RequestURI {
+	case "/login", "/create-account":
+		allowedPath(reqToken, c)
+	}
+
 	if reqToken != nil {
 		givenToken := reqToken[0]
 		claims := jwt.MapClaims{}
@@ -25,16 +30,42 @@ func Entry(c *gin.Context) {
 			logger.MiddlewareError(err.Error())
 		}
 
-		for key, val := range claims {
-			fmt.Printf("Key: %v, value: %v\n", key, val)
+		nickName, err := auth.ValidateJWT(jwtToken)
+		if err != nil {
+			Abort(c)
 		}
-		_ = jwtToken
+
+		_ = nickName
+
 		logger.MiddlewareInfo(fmt.Sprintf("protect path %v", claims["name"]))
 	} else {
-		logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s", c.ClientIP()))
-		c.JSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized"))
-		c.Abort()
+		Abort(c)
 	}
+}
+
+func allowedPath(reqToken interface{}, c *gin.Context) {
+	if reqToken != nil {
+
+	} else {
+		switch c.Request.RequestURI {
+		case "/create-account":
+			switch c.Request.Method {
+			case http.MethodPost:
+				resp, err := http.Post("localhost:8081/api/create-account", "Authorized", c.Request.Body)
+				if err != nil {
+					c.JSON(http.StatusBadRequest, err.Error())
+				}
+				auth.New()
+				c.JSON(http.StatusOK, resp.Body)
+			}
+		}
+	}
+}
+
+func Abort(c *gin.Context) {
+	logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s", c.ClientIP()))
+	c.JSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized"))
+	c.Abort()
 }
 
 /*

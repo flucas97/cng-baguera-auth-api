@@ -19,27 +19,27 @@ func Entry(c *gin.Context) {
 	switch c.Request.RequestURI {
 	case "/login", "/create-account":
 		allowedPath(reqToken, c)
-	}
+	default:
+		if reqToken != nil {
+			givenToken := reqToken[0]
+			claims := jwt.MapClaims{}
 
-	if reqToken != nil {
-		givenToken := reqToken[0]
-		claims := jwt.MapClaims{}
+			jwtToken, err := auth.GetJWT(givenToken, claims)
+			if err != nil {
+				logger.MiddlewareError(err.Error())
+			}
 
-		jwtToken, err := auth.GetJWT(givenToken, claims)
-		if err != nil {
-			logger.MiddlewareError(err.Error())
-		}
+			nickName, err := auth.ValidateJWT(jwtToken)
+			if err != nil {
+				Abort(c)
+			}
 
-		nickName, err := auth.ValidateJWT(jwtToken)
-		if err != nil {
+			_ = nickName
+
+			logger.MiddlewareInfo(fmt.Sprintf("protect path %v", claims["name"]))
+		} else {
 			Abort(c)
 		}
-
-		_ = nickName
-
-		logger.MiddlewareInfo(fmt.Sprintf("protect path %v", claims["name"]))
-	} else {
-		Abort(c)
 	}
 }
 

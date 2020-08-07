@@ -45,6 +45,11 @@ func MiddlewareError(msg string, tags ...zap.Field) {
 	log.Sync()
 }
 
+func MiddlewareAttempt(msg string, tags ...zap.Field) {
+	log.Warn(msg, tags...)
+	log.Sync()
+}
+
 func Error(msg string, err error, tags ...zap.Field) {
 	if err != nil {
 		tags = append(tags, zap.NamedError("error", err))

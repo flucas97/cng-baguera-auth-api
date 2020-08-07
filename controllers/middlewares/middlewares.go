@@ -29,7 +29,7 @@ func Entry(c *gin.Context) {
 		_ = jwtToken
 		logger.MiddlewareInfo(fmt.Sprintf("protect path %v", claims["name"]))
 	} else {
-		logger.MiddlewareInfo(fmt.Sprintf("attempt to enter from IP %v", c.Request.Host))
+		logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s", c.ClientIP()))
 	}
 }
 

@@ -1,12 +1,36 @@
 package middlewares
 
 import (
-	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/gateway"
+	"fmt"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/flucas97/cng/cng-baguera-auth-api/domain/auth"
+	"github.com/flucas97/cng/cng-baguera-auth-api/utils/logger"
 	"github.com/gin-gonic/gin"
 )
 
-func Middleware(c *gin.Context) {
-	gateway.Entry(c)
+func Entry(c *gin.Context) {
+	var (
+		reqToken = c.Request.Header["Authorization"]
+	)
+
+	if reqToken != nil {
+		givenToken := reqToken[0]
+		claims := jwt.MapClaims{}
+
+		jwtToken, err := auth.GetJWT(givenToken, claims)
+		if err != nil {
+			logger.MiddlewareError(err.Error())
+		}
+
+		for key, val := range claims {
+			fmt.Printf("Key: %v, value: %v\n", key, val)
+		}
+		_ = jwtToken
+		logger.MiddlewareInfo(fmt.Sprintf("protect path %v", claims["name"]))
+	} else {
+		logger.MiddlewareInfo(fmt.Sprintf("attempt to enter from IP %v", c.Request.Host))
+	}
 }
 
 /*

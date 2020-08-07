@@ -1,6 +1,8 @@
 package app
 
 import (
+	"sync"
+
 	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/gateway"
 	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/middlewares"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/logger"
@@ -9,6 +11,7 @@ import (
 
 var (
 	Router = gin.Default()
+	Waitg  sync.WaitGroup
 )
 
 func StartApp() {

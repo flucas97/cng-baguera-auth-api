@@ -20,11 +20,10 @@ func Entry(c *gin.Context) {
 			//if err != nil { }
 			//_ = res
 		case "/ping":
+			// app.Waitg.Add(1)
 			ping.Ping(c)
-			return
 		default:
 			pathNotFound(c)
-			return
 		}
 	case http.MethodPost:
 		switch URI {
@@ -61,6 +60,7 @@ func Entry(c *gin.Context) {
 		pathNotFound(c)
 		return
 	}
+	// app.Waitg.Wait()
 }
 
 func pathNotFound(c *gin.Context) {

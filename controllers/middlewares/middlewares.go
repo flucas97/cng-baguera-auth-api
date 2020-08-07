@@ -2,9 +2,11 @@ package middlewares
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/flucas97/cng/cng-baguera-auth-api/domain/auth"
+	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/logger"
 	"github.com/gin-gonic/gin"
 )
@@ -30,6 +32,8 @@ func Entry(c *gin.Context) {
 		logger.MiddlewareInfo(fmt.Sprintf("protect path %v", claims["name"]))
 	} else {
 		logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s", c.ClientIP()))
+		c.JSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized"))
+		c.Abort()
 	}
 }
 

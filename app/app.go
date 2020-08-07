@@ -1,19 +1,22 @@
 package app
 
 import (
+	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/gateway"
 	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/middlewares"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/logger"
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	router = gin.Default()
+	Router = gin.Default()
 )
 
 func StartApp() {
-	router.Use(middlewares.Entry)
-	StartRoutes()
+	// Auth Middleware
+	Router.Use(middlewares.Entry)
+	// Entrypoint API
+	Router.Use(gateway.Entry)
 
 	logger.Info("Starting server...")
-	router.Run(":8082")
+	Router.Run(":8082")
 }

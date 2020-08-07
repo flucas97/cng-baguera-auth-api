@@ -8,5 +8,5 @@ import (
 
 // Ping check application status
 func Ping(c *gin.Context) {
-	c.String(http.StatusOK, "pong")
+	c.JSON(http.StatusOK, "pong")
 }

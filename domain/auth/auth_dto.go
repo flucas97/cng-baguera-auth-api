@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/dgrijalva/jwt-go"
@@ -38,4 +39,14 @@ func (au *auth) GenerateToken() (string, *error_factory.RestErr) {
 func (a *auth) VerifyToken() bool {
 
 	return true
+}
+
+func GetJWT(reqToken string, claims jwt.MapClaims) (*jwt.Token, error) {
+	token, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("API_SECRET")), nil
+	})
+	if err != nil {
+		fmt.Println("error")
+	}
+	return token, nil
 }

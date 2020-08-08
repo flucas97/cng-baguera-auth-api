@@ -21,35 +21,35 @@ func Entry(c *gin.Context) {
 			ping.Ping(c)
 		default:
 			pathNotFound(c)
-			middlewares.Abort(c)
+			middlewares.ForbiddenPath(c)
 			return
 		}
 	case http.MethodPost:
 		switch URI {
 		default:
 			pathNotFound(c)
-			middlewares.Abort(c)
+			middlewares.ForbiddenPath(c)
 			return
 		}
 	case http.MethodPatch:
 		switch URI {
 		default:
 			pathNotFound(c)
-			middlewares.Abort(c)
+			middlewares.ForbiddenPath(c)
 			return
 		}
 	case http.MethodPut:
 		switch URI {
 		default:
 			pathNotFound(c)
-			middlewares.Abort(c)
+			middlewares.ForbiddenPath(c)
 			return
 		}
 	case http.MethodDelete:
 		switch URI {
 		default:
 			pathNotFound(c)
-			middlewares.Abort(c)
+			middlewares.ForbiddenPath(c)
 			return
 		}
 	default:

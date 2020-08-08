@@ -36,8 +36,11 @@ func (au *auth) GenerateJWT() (string, *error_factory.RestErr) {
 	return newToken, nil
 }
 
-func (a *auth) VerifyToken() bool {
-
+func (a *auth) VerifyJWT() bool {
+	/*for key, val := range jwt.Claims {
+		fmt.Printf("Key: %v, value: %v\n", key, val)
+	}
+	*/
 	return true
 }
 
@@ -49,10 +52,4 @@ func GetJWT(reqToken string, claims jwt.MapClaims) (*jwt.Token, error) {
 		fmt.Println("error")
 	}
 	return token, nil
-}
-
-func ValidateJWT(jwt *jwt.Token) string {
-	for key, val := range jwt.Claims {
-		fmt.Printf("Key: %v, value: %v\n", key, val)
-	}
 }

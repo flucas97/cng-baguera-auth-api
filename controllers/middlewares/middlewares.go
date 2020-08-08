@@ -25,7 +25,7 @@ func Entry(c *gin.Context) {
 			givenToken := reqToken[0]
 			claims := jwt.MapClaims{}
 
-			jwtToken, err := auth.GetJWT(givenToken, claims)
+			jwtToken, err := auth.ValidateJWT(givenToken, claims)
 			if err != nil {
 				logger.MiddlewareError(err.Error())
 				return
@@ -49,19 +49,31 @@ func allowedPath(reqToken []string, c *gin.Context) {
 		case "/new-account":
 			switch c.Request.Method {
 			case http.MethodPost:
-				resp, err := http.Post("http://localhost:8081/api/new-account", "Authorized", c.Request.Body)
+				w, err := http.Post("http://localhost:8081/api/new-account", "Authorized", c.Request.Body)
 				if err != nil {
 					c.AbortWithError(http.StatusBadRequest, err)
 					return
 				}
 
-				nickName := resp.Header.Get("name")
-				if nickName == "" {
+				nickName, found := getAccountIdentifier(w)
+				if !found {
 					c.AbortWithStatusJSON(http.StatusBadRequest, error_factory.NewBadRequestError("user already exists"))
 					return
 				}
 
-				logger.Info(nickName)
+				auth := auth.New(nickName)
+
+				jwt, restErr := auth.GenerateJWT()
+				if restErr != nil {
+					c.JSON(http.StatusInternalServerError, "error generating token, try again")
+					return
+				}
+
+				/*
+					save nickName(key) - jwt(value) into Redis
+
+				*/
+				c.Header("cngAuth", jwt)
 				c.AbortWithStatusJSON(http.StatusCreated, "account successfully created")
 				return
 			}
@@ -73,4 +85,13 @@ func ForbiddenPath(c *gin.Context) {
 	logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s", c.ClientIP()))
 	c.JSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized"))
 	c.Abort()
+}
+
+func getAccountIdentifier(w *http.Response) (string, bool) {
+	nickName := w.Header.Get("nick_name")
+	if nickName == "" {
+		return "", false
+	}
+
+	return nickName, true
 }

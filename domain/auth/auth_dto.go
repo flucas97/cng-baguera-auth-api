@@ -24,7 +24,7 @@ func New(name string) *auth {
 func (au *auth) GenerateJWT() (string, *error_factory.RestErr) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
-	claims["account_name"] = au.Name
+	claims["nick_name"] = au.Name
 	claims["uuid"] = au.Uuid
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -44,7 +44,7 @@ func (a *auth) VerifyJWT() bool {
 	return true
 }
 
-func GetJWT(reqToken string, claims jwt.MapClaims) (*jwt.Token, error) {
+func ValidateJWT(reqToken string, claims jwt.MapClaims) (*jwt.Token, error) {
 	token, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("API_SECRET")), nil
 	})

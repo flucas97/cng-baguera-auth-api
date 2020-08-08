@@ -17,8 +17,9 @@ func Entry(c *gin.Context) {
 	)
 
 	switch c.Request.RequestURI {
-	case "/login", "/create-account":
+	case "/login", "/new-account":
 		allowedPath(reqToken, c)
+		return
 	default:
 		if reqToken != nil {
 			givenToken := reqToken[0]
@@ -27,63 +28,49 @@ func Entry(c *gin.Context) {
 			jwtToken, err := auth.GetJWT(givenToken, claims)
 			if err != nil {
 				logger.MiddlewareError(err.Error())
+				return
 			}
 
-			nickName, err := auth.ValidateJWT(jwtToken)
-			if err != nil {
-				Abort(c)
-			}
-
-			_ = nickName
-
+			_ = jwtToken
 			logger.MiddlewareInfo(fmt.Sprintf("protect path %v", claims["name"]))
+			return
 		} else {
-			Abort(c)
+			ForbiddenPath(c)
+			return
 		}
 	}
 }
 
-func allowedPath(reqToken interface{}, c *gin.Context) {
-	if reqToken != nil {
+func allowedPath(reqToken []string, c *gin.Context) {
+	if len(reqToken) != 0 {
 
 	} else {
 		switch c.Request.RequestURI {
-		case "/create-account":
+		case "/new-account":
 			switch c.Request.Method {
 			case http.MethodPost:
-				resp, err := http.Post("localhost:8081/api/create-account", "Authorized", c.Request.Body)
+				resp, err := http.Post("http://localhost:8081/api/new-account", "Authorized", c.Request.Body)
 				if err != nil {
-					c.JSON(http.StatusBadRequest, err.Error())
+					c.AbortWithError(http.StatusBadRequest, err)
+					return
 				}
-				auth.New()
-				c.JSON(http.StatusOK, resp.Body)
+
+				nickName := resp.Header.Get("name")
+				if nickName == "" {
+					c.AbortWithStatusJSON(http.StatusBadRequest, error_factory.NewBadRequestError("user already exists"))
+					return
+				}
+
+				logger.Info(nickName)
+				c.AbortWithStatusJSON(http.StatusCreated, "account successfully created")
+				return
 			}
 		}
 	}
 }
 
-func Abort(c *gin.Context) {
+func ForbiddenPath(c *gin.Context) {
 	logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s", c.ClientIP()))
 	c.JSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized"))
 	c.Abort()
 }
-
-/*
-	// middlewares
-
-	request has a jwt in a header or cookie?
-	- no -> redirect to /login
-	- yes ->
-			auth := auth.New(name)
-			token := auth.GenerateToken()
-
-			check (GET) against Redis if KEY/VALUE (NAME/TOKEN)
-			exists and if it is equal of what we have
-
-			- yes ->
-					gateway.Entry(c gin.router) // load routes
-			- no ->
-				redirect to login and clear this token
-
-
-*/

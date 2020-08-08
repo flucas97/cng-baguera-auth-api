@@ -55,7 +55,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 					return
 				}
 
-				nickName, found := getAccountIdentifier(w)
+				nickName, found := getAccountName(w)
 				if !found {
 					c.AbortWithStatusJSON(http.StatusBadRequest, error_factory.NewBadRequestError("user already exists"))
 					return
@@ -73,7 +73,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 					save nickName(key) - jwt(value) into Redis
 
 				*/
-				c.Header("cngAuth", jwt)
+				c.Header("cng-auth", jwt)
 				c.AbortWithStatusJSON(http.StatusCreated, "account successfully created")
 				return
 			}
@@ -87,7 +87,7 @@ func ForbiddenPath(c *gin.Context) {
 	c.Abort()
 }
 
-func getAccountIdentifier(w *http.Response) (string, bool) {
+func getAccountName(w *http.Response) (string, bool) {
 	nickName := w.Header.Get("nick_name")
 	if nickName == "" {
 		return "", false

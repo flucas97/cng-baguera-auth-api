@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -10,6 +11,10 @@ import (
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/logger"
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	ctx context.Context
 )
 
 func Entry(c *gin.Context) {
@@ -61,7 +66,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 					return
 				}
 
-				restErr := authService.Authorize(w.Header.Get("nick_name"))
+				restErr := authService.Authorize(w.Header.Get("nick_name"), ctx)
 				if restErr != nil {
 					c.AbortWithStatusJSON(http.StatusBadRequest, err)
 					return

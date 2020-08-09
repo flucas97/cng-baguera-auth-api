@@ -38,14 +38,6 @@ func (au *Token) GenerateJWT() *error_factory.RestErr {
 	return nil
 }
 
-func (a *Token) VerifyJWT() bool {
-	/*for key, val := range jwt.Claims {
-		fmt.Printf("Key: %v, value: %v\n", key, val)
-	}
-	*/
-	return true
-}
-
 func ValidateJWT(reqToken string, claims jwt.MapClaims) (*jwt.Token, error) {
 	token, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("API_SECRET")), nil

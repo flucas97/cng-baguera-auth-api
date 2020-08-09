@@ -1,4 +1,4 @@
-package redis
+package redis_db
 
 import (
 	"context"
@@ -8,16 +8,15 @@ import (
 )
 
 var (
-	ctx = context.Background()
-)
-
-func init() {
-	Client := redis.NewClient(&redis.Options{
+	ctx    = context.Background()
+	Client = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
 	})
+)
 
+func init() {
 	_, err := Client.Ping(ctx).Result()
 	if err != nil {
 		logger.Error("cannot ping redis", err)

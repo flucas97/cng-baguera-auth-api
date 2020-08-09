@@ -9,19 +9,20 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type auth struct {
-	Name string `json:"name"`
-	Uuid string `json:"_uuid"`
+type Token struct {
+	Name     string `json:"name"`
+	Uuid     string `json:"_uuid"`
+	JwtToken string `json:"jwt"`
 }
 
-func New(name string) *auth {
-	au := &auth{}
+func New(name string) *Token {
+	au := &Token{}
 	au.Uuid = uuid.NewV4().String()
 	au.Name = name
 	return au
 }
 
-func (au *auth) GenerateJWT() (string, *error_factory.RestErr) {
+func (au *Token) GenerateJWT() *error_factory.RestErr {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["nick_name"] = au.Name
@@ -30,13 +31,14 @@ func (au *auth) GenerateJWT() (string, *error_factory.RestErr) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	newToken, err := token.SignedString([]byte(os.Getenv("API_SECRET")))
 	if err != nil {
-		return "", error_factory.NewInternalServerError("error generating token")
+		return error_factory.NewInternalServerError("error generating token")
 	}
 
-	return newToken, nil
+	au.JwtToken = newToken
+	return nil
 }
 
-func (a *auth) VerifyJWT() bool {
+func (a *Token) VerifyJWT() bool {
 	/*for key, val := range jwt.Claims {
 		fmt.Printf("Key: %v, value: %v\n", key, val)
 	}

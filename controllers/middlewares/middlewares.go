@@ -61,28 +61,13 @@ func allowedPath(reqToken []string, c *gin.Context) {
 					return
 				}
 
-				nickName, found := getAccountName(w)
-				if !found {
-					c.AbortWithStatusJSON(http.StatusBadRequest, error_factory.NewBadRequestError("user already exists"))
-					return
-				}
-
-				token := auth.New(nickName)
-				authService.AuthorizeAccount(w.Header.Get("nick_name"))
-				jwt, restErr := token.GenerateJWT()
+				restErr := authService.Authorize(w.Header.Get("nick_name"))
 				if restErr != nil {
-					c.JSON(http.StatusInternalServerError, "error generating token, try again")
+					c.AbortWithStatusJSON(http.StatusBadRequest, err)
 					return
 				}
 
-				if err := auth_service.AuthService.CacheJWT(jwt); err != nil {
-
-				}
-				/*
-					save nickName(key) - jwt(value) into Redis
-
-				*/
-				c.Header("Authorization", jwt)
+				//c.Header("Authorization", jwt)
 				c.AbortWithStatusJSON(http.StatusCreated, "account successfully created")
 				return
 			}
@@ -99,13 +84,4 @@ func ForbiddenPath(c *gin.Context) {
 	logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s", c.ClientIP()))
 	c.JSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized"))
 	c.Abort()
-}
-
-func getAccountName(w *http.Response) (string, bool) {
-	nickName := 
-	if nickName == "" {
-		return "", false
-	}
-
-	return nickName, true
 }

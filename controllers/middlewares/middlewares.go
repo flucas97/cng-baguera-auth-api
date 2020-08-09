@@ -48,16 +48,16 @@ func Entry(c *gin.Context) {
 }
 
 func allowedPath(reqToken []string, c *gin.Context) {
+	var (
+		authService = auth_service.AuthService
+	)
+
 	if len(reqToken) != 0 {
-		logger.Info(fmt.Sprint(reqToken[0]))
-		c.Abort()
+		c.AbortWithStatus(http.StatusFound)
 		return
 	} else {
 		switch c.Request.RequestURI {
 		case "/new-account":
-			var (
-				authService = auth_service.AuthService
-			)
 			switch c.Request.Method {
 			case http.MethodPost:
 				w, err := http.Post("http://localhost:8081/api/new-account", "Authorized", c.Request.Body)

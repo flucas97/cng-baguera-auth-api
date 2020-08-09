@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dgrijalva/jwt-go"
-	"github.com/flucas97/cng/cng-baguera-auth-api/domain/auth"
 	"github.com/flucas97/cng/cng-baguera-auth-api/services/auth_service"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/logger"
@@ -14,7 +12,8 @@ import (
 )
 
 var (
-	ctx context.Context
+	ctx         context.Context
+	authService = auth_service.AuthService
 )
 
 func Entry(c *gin.Context) {
@@ -28,17 +27,12 @@ func Entry(c *gin.Context) {
 		return
 	default:
 		if reqToken != nil {
-			givenToken := reqToken[0]
-			claims := jwt.MapClaims{}
-
-			jwtToken, err := auth.ValidateJWT(givenToken, claims)
-			if err != nil {
-				logger.MiddlewareError(err.Error())
+			found, err := authService.Validate(reqToken[0], ctx)
+			if err != nil || !found {
+				ForbiddenPath(c)
 				return
 			}
-
-			_ = jwtToken
-			logger.MiddlewareInfo(fmt.Sprintf("protect path %v", claims["name"]))
+			c.Next()
 			return
 		} else {
 			ForbiddenPath(c)
@@ -48,10 +42,6 @@ func Entry(c *gin.Context) {
 }
 
 func allowedPath(reqToken []string, c *gin.Context) {
-	var (
-		authService = auth_service.AuthService
-	)
-
 	if len(reqToken) != 0 {
 		c.AbortWithStatus(http.StatusFound)
 		return

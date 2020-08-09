@@ -13,6 +13,7 @@ var (
 
 type authServiceInterface interface {
 	Authorize(string, context.Context) *error_factory.RestErr
+	Validate(string, context.Context) (bool, *error_factory.RestErr)
 }
 
 type authService struct{}
@@ -34,4 +35,21 @@ func (au *authService) Authorize(nickName string, ctx context.Context) *error_fa
 	}
 
 	return nil
+}
+
+func (au *authService) Validate(jwt string, ctx context.Context) (bool, *error_factory.RestErr) {
+	/*
+		givenToken := reqToken[0]
+		claims := jwt.MapClaims{}
+
+		jwtToken, err := auth.ValidateJWT(givenToken, claims)
+		if err != nil {
+			logger.MiddlewareError(err.Error())
+			return
+		}
+
+		_ = jwtToken
+		logger.MiddlewareInfo(fmt.Sprintf("protect path %v", claims["name"]))
+	*/
+	return true, nil
 }

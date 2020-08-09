@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/dgrijalva/jwt-go"
@@ -10,9 +9,9 @@ import (
 )
 
 type Token struct {
-	Name     string `json:"name"`
-	Uuid     string `json:"_uuid"`
-	JwtToken string `json:"jwt"`
+	Name string `json:"name"`
+	Uuid string `json:"_uuid"`
+	Jwt  string `json:"jwt"`
 }
 
 func New(name string) *Token {
@@ -28,22 +27,12 @@ func (au *Token) GenerateJWT() *error_factory.RestErr {
 	claims["nick_name"] = au.Name
 	claims["uuid"] = au.Uuid
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	newToken, err := token.SignedString([]byte(os.Getenv("API_SECRET")))
+	jwtPure := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	jwt, err := jwtPure.SignedString([]byte(os.Getenv("API_SECRET")))
 	if err != nil {
 		return error_factory.NewInternalServerError("error generating token")
 	}
 
-	au.JwtToken = newToken
+	au.Jwt = jwt
 	return nil
-}
-
-func ValidateJWT(reqToken string, claims jwt.MapClaims) (*jwt.Token, error) {
-	token, err := jwt.ParseWithClaims(reqToken, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("API_SECRET")), nil
-	})
-	if err != nil {
-		fmt.Println("error")
-	}
-	return token, nil
 }

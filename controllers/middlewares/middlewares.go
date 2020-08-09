@@ -26,7 +26,7 @@ func Entry(c *gin.Context) {
 		allowedPath(reqToken, c)
 		return
 	default:
-		if reqToken != nil {
+		if len(reqToken) != 0 {
 			found, err := authService.Validate(reqToken[0], ctx)
 			if err != nil || !found {
 				ForbiddenPath(c)

@@ -1,7 +1,6 @@
 package auth_service
 
 import (
-	"github.com/flucas97/cng/cng-baguera-auth-api/domain/account"
 	"github.com/flucas97/cng/cng-baguera-auth-api/domain/auth"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
 )
@@ -11,16 +10,25 @@ var (
 )
 
 type authServiceInterface interface {
-	New(account.Login) (string, *error_factory.RestErr)
+	Authorize(string) *error_factory.RestErr
 }
 
 type authService struct{}
 
-func (au *authService) New(account account.Login) (string, *error_factory.RestErr) {
-	auth := auth.New(account.Name)
-	token, err := auth.GenerateToken()
-	if err != nil {
-		return "", err
+func (au *authService) Authorize(nickName string) *error_factory.RestErr {
+	if nickName == "" {
+		return error_factory.NewBadRequestError("account not found")
 	}
-	return token, nil
+
+	token := auth.New(nickName)
+
+	err := token.GenerateJWT()
+	if err != nil {
+		return err
+	}
+
+	if err := token.Authorize(); err != nil {
+
+	}
+
 }

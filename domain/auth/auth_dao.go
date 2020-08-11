@@ -18,6 +18,7 @@ func (token *Token) Authorize(ctx context.Context) *error_factory.RestErr {
 
 func (token *Token) Validate(context.Context) (bool, *error_factory.RestErr) {
 	/*
+		val, err := redis_db.Client.Get(key).Result()
 		check if is any register of this account in Redis
 		then check if the jwt token is the same in Token.Jwt
 	*/

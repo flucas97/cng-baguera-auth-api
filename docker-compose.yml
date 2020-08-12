@@ -1,6 +1,7 @@
 version: '3'
 services:
-  api:
+
+  auth:
     image: golang:1.13
     volumes:
       - .:/app/auth
@@ -10,5 +11,17 @@ services:
     command: go run . -v
     ports:
       - "8082:8082"
+    restart: always
     expose:
       - "8082"
+
+  cachedb:
+    image: redis
+    command: redis-server --requirepass Root!2020
+    ports:
+      - "6379:6379"
+
+networks:
+  default:
+    external:
+      name: cng

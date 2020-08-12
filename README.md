@@ -1,4 +1,4 @@
-# {CNG} Baguera Auth Gateway API
+# {CNG} Baguera Auth Gateway
 
 ### Start the project running
 #### `$ make`

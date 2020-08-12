@@ -1,6 +1,7 @@
 version: '3'
 services:
-  baguera:
+
+  auth:
     image: golang:1.13
     volumes:
       - .:/app/auth
@@ -19,3 +20,8 @@ services:
     command: redis-server --requirepass Root!2020
     ports:
       - "6379:6379"
+
+networks:
+  default:
+    external:
+      name: cng

@@ -7,6 +7,7 @@ import (
 	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/middlewares"
 	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/ping"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
+	"github.com/flucas97/cng/cng-baguera-auth-api/utils/logger"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,6 +19,10 @@ func Entry(c *gin.Context) {
 		switch URI {
 		case "/ping":
 			ping.Ping(c)
+		case "/cannabis":
+			logger.Info("chegou a entrar aqui")
+			c.AbortWithStatusJSON(http.StatusContinue, "continue to cannabis :)")
+			return
 		default:
 			pathNotFound(c)
 			middlewares.ForbiddenPath(c)

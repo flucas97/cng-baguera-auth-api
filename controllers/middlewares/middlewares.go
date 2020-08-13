@@ -32,7 +32,7 @@ func Entry(c *gin.Context) {
 				ForbiddenPath(c)
 				return
 			}
-			c.Next()
+			logger.Info("processo morreu mas foi autorizado")
 			return
 		} else {
 			ForbiddenPath(c)

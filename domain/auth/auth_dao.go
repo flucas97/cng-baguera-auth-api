@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"time"
 
 	"github.com/flucas97/cng/cng-baguera-auth-api/db/auth/redis_db"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
@@ -9,7 +10,7 @@ import (
 )
 
 func (token *Token) Authorize(ctx context.Context) *error_factory.RestErr {
-	_, err := redis_db.Client.Set(ctx, token.Name, token.Jwt, 0).Result()
+	_, err := redis_db.Client.Set(ctx, token.Name, token.Jwt, 600000*time.Second).Result()
 	if err != nil {
 		logger.Error("redis set error", err)
 		return error_factory.NewInternalServerError(err.Error())

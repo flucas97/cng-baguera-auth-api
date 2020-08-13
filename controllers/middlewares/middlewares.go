@@ -32,13 +32,16 @@ func Entry(c *gin.Context) {
 				ForbiddenPath(c)
 				return
 			}
+
 			logger.Info("authorized, keep going")
+			c.Next()
 			return
 		} else {
 			ForbiddenPath(c)
 			c.Abort()
 		}
 	}
+
 }
 
 func allowedPath(reqToken []string, c *gin.Context) {
@@ -89,6 +92,5 @@ func allowedPath(reqToken []string, c *gin.Context) {
 
 func ForbiddenPath(c *gin.Context) {
 	logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s", c.ClientIP()))
-	c.JSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized"))
-	c.Abort()
+	c.AbortWithStatusJSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized"))
 }

@@ -18,7 +18,7 @@ var (
 func StartApp() {
 	// Auth Middleware
 	Router.Use(middlewares.Entry)
-	// Entrypoint API
+	// Api Entrypoint
 	Router.Use(gateway.Entry)
 
 	logger.Info("Starting server...")

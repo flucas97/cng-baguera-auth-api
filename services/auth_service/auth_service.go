@@ -5,6 +5,7 @@ import (
 
 	"github.com/flucas97/cng/cng-baguera-auth-api/domain/auth"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
+	"github.com/flucas97/cng/cng-baguera-auth-api/utils/logger"
 )
 
 var (
@@ -12,44 +13,46 @@ var (
 )
 
 type authServiceInterface interface {
-	Authorize(string, context.Context) *error_factory.RestErr
+	Authorize(string, context.Context) (string, *error_factory.RestErr)
 	Validate(string, context.Context) (bool, *error_factory.RestErr)
 }
 
 type authService struct{}
 
-func (au *authService) Authorize(nickName string, ctx context.Context) *error_factory.RestErr {
+func (au *authService) Authorize(nickName string, ctx context.Context) (string, *error_factory.RestErr) {
 	if nickName == "" {
-		return error_factory.NewBadRequestError("account not found")
+		return "", error_factory.NewBadRequestError("account not found")
 	}
 
 	token := auth.New(nickName)
 
-	err := token.GenerateJWT()
+	jwt, err := token.GenerateJWT()
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if err := token.Authorize(ctx); err != nil {
-
+		return "", err
 	}
 
-	return nil
+	return jwt, nil
 }
 
 func (au *authService) Validate(jwt string, ctx context.Context) (bool, *error_factory.RestErr) {
-	/*
-		givenToken := reqToken[0]
-		claims := jwt.MapClaims{}
+	nickName, err := auth.GetNickNameFromJWT(jwt)
+	if err != nil {
+		return false, err
+	}
 
-		jwtToken, err := auth.ValidateJWT(givenToken, claims)
-		if err != nil {
-			logger.MiddlewareError(err.Error())
-			return
-		}
+	ok, err := auth.Validate(ctx, nickName, jwt)
+	if err != nil {
+		return false, err
+	}
 
-		_ = jwtToken
-		logger.MiddlewareInfo(fmt.Sprintf("protect path %v", claims["name"]))
-	*/
+	if !ok {
+		return false, error_factory.NewNotFoundError("jwt not valid")
+	}
+
+	logger.Info("encontrado!")
 	return true, nil
 }

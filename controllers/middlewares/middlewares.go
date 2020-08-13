@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	ctx         context.Context
+	ctx         = context.Background()
 	authService = auth_service.AuthService
 )
 
@@ -43,27 +43,46 @@ func Entry(c *gin.Context) {
 
 func allowedPath(reqToken []string, c *gin.Context) {
 	if len(reqToken) != 0 {
-		c.AbortWithStatus(http.StatusFound)
+		ok, err := authService.Validate(reqToken[0], ctx)
+		if err != nil {
+			ForbiddenPath(c)
+			return
+		}
+
+		if !ok {
+			ForbiddenPath(c)
+			return
+		}
+
+		logger.Info("already logged in")
+		c.AbortWithStatusJSON(http.StatusFound, "already logged in")
 		return
 	} else {
 		switch c.Request.RequestURI {
 		case "/new-account":
 			switch c.Request.Method {
 			case http.MethodPost:
-				w, err := http.Post("http://localhost:8081/api/new-account", "Authorized", c.Request.Body)
+				w, err := http.Post("http://172.30.0.5:8081/api/new-account", "Authorized", c.Request.Body)
 				if err != nil {
 					c.AbortWithError(http.StatusBadRequest, err)
 					return
 				}
 
-				restErr := authService.Authorize(w.Header.Get("nick_name"), ctx)
+				jwt, restErr := authService.Authorize(w.Header.Get("nick_name"), ctx)
 				if restErr != nil {
 					c.AbortWithStatusJSON(http.StatusBadRequest, err)
 					return
 				}
+				resp := struct {
+					token string
+					msg   string
+				}{
+					jwt,
+					"account successfuly created",
+				}
+				c.Header("Authorization", jwt)
+				c.AbortWithStatusJSON(http.StatusCreated, resp)
 
-				//c.Header("Authorization", jwt)
-				c.AbortWithStatusJSON(http.StatusCreated, "account successfully created")
 				return
 			}
 		case "/login":

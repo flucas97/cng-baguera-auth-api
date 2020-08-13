@@ -10,9 +10,11 @@ import (
 var (
 	ctx    = context.Background()
 	Client = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
+		Addr:       "cachedb:6379",
+		Password:   "Root!2020",
+		PoolSize:   500,
+		MaxRetries: 2,
+		DB:         0,
 	})
 )
 

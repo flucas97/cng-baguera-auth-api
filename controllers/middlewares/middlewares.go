@@ -44,17 +44,11 @@ func Entry(c *gin.Context) {
 func allowedPath(reqToken []string, c *gin.Context) {
 	if len(reqToken) != 0 {
 		ok, err := authService.Validate(reqToken[0], ctx)
-		if err != nil {
+		if err != nil || !ok {
 			ForbiddenPath(c)
 			return
 		}
 
-		if !ok {
-			ForbiddenPath(c)
-			return
-		}
-
-		logger.Info("already logged in")
 		c.AbortWithStatusJSON(http.StatusFound, "already logged in")
 		return
 	} else {

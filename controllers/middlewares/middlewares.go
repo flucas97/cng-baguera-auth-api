@@ -76,7 +76,6 @@ func allowedPath(reqToken []string, c *gin.Context) {
 						"message":       "account successfuly created!",
 					},
 				)
-
 				return
 			}
 		case "/login":

@@ -5,7 +5,6 @@ import (
 
 	"github.com/flucas97/cng/cng-baguera-auth-api/domain/auth"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
-	"github.com/flucas97/cng/cng-baguera-auth-api/utils/logger"
 )
 
 var (
@@ -48,11 +47,9 @@ func (au *authService) Validate(jwt string, ctx context.Context) (bool, *error_f
 	if err != nil {
 		return false, err
 	}
-
 	if !ok {
 		return false, error_factory.NewNotFoundError("jwt not valid")
 	}
 
-	logger.Info("encontrado!")
 	return true, nil
 }

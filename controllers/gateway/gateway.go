@@ -3,6 +3,7 @@ package gateway
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/middlewares"
 	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/ping"
@@ -20,8 +21,12 @@ func Entry(c *gin.Context) {
 		case "/ping":
 			ping.Ping(c)
 		case "/cannabis":
-			logger.Info("chegou a entrar aqui")
-			c.AbortWithStatusJSON(http.StatusContinue, "continue to cannabis :)")
+			logger.Info("entry cannabis gateway")
+			time.Sleep(2 * time.Second)
+			c.AbortWithStatusJSON(http.StatusContinue, gin.H{
+				"message":     "continue to cannabis :)",
+				"status_code": http.StatusContinue,
+			})
 			return
 		default:
 			pathNotFound(c)

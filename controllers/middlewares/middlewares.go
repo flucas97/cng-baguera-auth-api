@@ -67,15 +67,15 @@ func allowedPath(reqToken []string, c *gin.Context) {
 					c.AbortWithStatusJSON(http.StatusBadRequest, err)
 					return
 				}
-				resp := struct {
-					token string
-					msg   string
-				}{
-					jwt,
-					"account successfuly created",
-				}
+
 				c.Header("Authorization", jwt)
-				c.AbortWithStatusJSON(http.StatusCreated, resp)
+				c.AbortWithStatusJSON(
+					http.StatusCreated,
+					gin.H{
+						"authorization": jwt,
+						"message":       "account successfuly created!",
+					},
+				)
 
 				return
 			}

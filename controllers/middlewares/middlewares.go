@@ -56,7 +56,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 		case "/new-account":
 			switch c.Request.Method {
 			case http.MethodPost:
-				w, err := http.Post("http://172.30.0.5:8081/api/new-account", "Authorized", c.Request.Body)
+				w, err := http.Post("http://172.30.0.5:8081/api/new-account", "application/json", c.Request.Body)
 				if err != nil {
 					c.AbortWithError(http.StatusBadRequest, err)
 					return

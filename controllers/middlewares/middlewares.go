@@ -24,7 +24,6 @@ func Entry(c *gin.Context) {
 	switch c.Request.RequestURI {
 	case "/login", "/new-account":
 		allowedPath(reqToken, c)
-		fmt.Println("passou allowed")
 		return
 	default:
 		if len(reqToken) != 0 {
@@ -34,7 +33,6 @@ func Entry(c *gin.Context) {
 				return
 			}
 
-			logger.Info("authorized, keep going")
 			c.Next()
 			return
 		} else {
@@ -66,21 +64,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 					return
 				}
 
-				jwt, restErr := authService.Authorize(w.Header.Get("nick_name"), ctx)
-				if restErr != nil {
-					c.AbortWithStatusJSON(http.StatusBadRequest, error_factory.NewBadRequestError("account name already exists"))
-					return
-				}
-
-				c.Header("Authorization", jwt)
-				c.AbortWithStatusJSON(
-					http.StatusCreated,
-					gin.H{
-						"authorization": jwt,
-						"message":       "account successfuly created!",
-					},
-				)
-				return
+				callAuthorize(&ctx, w.Header.Get("nick_name"), "account successfuly created", c)
 			}
 		case "/login":
 			switch c.Request.Method {
@@ -89,26 +73,11 @@ func allowedPath(reqToken []string, c *gin.Context) {
 			case http.MethodPost:
 				w, err := http.Post("http://172.30.0.3:8081/api/validate", "application/json", c.Request.Body)
 				if err != nil {
-					fmt.Println("nao caiu")
 					c.AbortWithError(http.StatusBadRequest, err)
 					return
 				}
 
-				jwt, restErr := authService.Authorize(w.Header.Get("nick_name"), ctx)
-				if restErr != nil {
-					c.AbortWithStatusJSON(http.StatusBadRequest, restErr)
-					return
-				}
-
-				c.Header("Authorization", jwt)
-				c.AbortWithStatusJSON(
-					http.StatusOK,
-					gin.H{
-						"authorization": jwt,
-						"message":       "logged in",
-					},
-				)
-				return
+				callAuthorize(&ctx, w.Header.Get("nick_name"), "logged in", c)
 			}
 		}
 	}
@@ -117,4 +86,22 @@ func allowedPath(reqToken []string, c *gin.Context) {
 func ForbiddenPath(c *gin.Context) {
 	logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s", c.ClientIP()))
 	c.AbortWithStatusJSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized"))
+}
+
+func callAuthorize(ctx *context.Context, nickName string, finalMessage string, c *gin.Context) {
+	jwt, restErr := authService.Authorize(nickName, *ctx)
+	if restErr != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, restErr)
+		return
+	}
+
+	c.Header("Authorization", jwt)
+	c.AbortWithStatusJSON(
+		http.StatusOK,
+		gin.H{
+			"authorization": jwt,
+			"message":       finalMessage,
+		},
+	)
+	return
 }

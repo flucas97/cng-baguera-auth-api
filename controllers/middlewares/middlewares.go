@@ -104,6 +104,9 @@ func allowedPath(reqToken []string, c *gin.Context) {
 func ForbiddenPath(c *gin.Context) {
 	logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s", c.ClientIP()))
 	c.AbortWithStatusJSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized"))
+	/*
+		TODO: clear token from cookie/storage
+	*/
 }
 
 func callAuthorize(ctx *context.Context, nickName string, accountId string, finalMessage string, errorMessage string, c *gin.Context) {

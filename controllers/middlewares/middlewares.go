@@ -66,6 +66,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 				}
 
 				callAuthorize(&ctx, w.Header.Get("nick_name"), "account successfuly created", "wrong account or password, try again", c)
+				return
 			}
 		case "/login":
 			switch c.Request.Method {
@@ -79,6 +80,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 				}
 
 				callAuthorize(&ctx, w.Header.Get("nick_name"), "successfully login", "wrong account or password, try again", c)
+				return
 			}
 		}
 	}
@@ -109,5 +111,4 @@ func callAuthorize(ctx *context.Context, nickName string, finalMessage string, e
 			"message":       finalMessage,
 		},
 	)
-	return
 }

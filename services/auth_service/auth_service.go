@@ -19,10 +19,6 @@ type authServiceInterface interface {
 type authService struct{}
 
 func (au *authService) Authorize(nickName string, ctx context.Context) (string, *error_factory.RestErr) {
-	if nickName == "" {
-		return "", error_factory.NewBadRequestError("wrong account or password, try again")
-	}
-
 	token := auth.New(nickName)
 
 	jwt, err := token.GenerateJWT()

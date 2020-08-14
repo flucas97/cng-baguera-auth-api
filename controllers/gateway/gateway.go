@@ -6,7 +6,6 @@ import (
 
 	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/ping"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
-	"github.com/flucas97/cng/cng-baguera-auth-api/utils/logger"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,12 +19,13 @@ func Entry(c *gin.Context) {
 			ping.Ping(c)
 			return
 		case "/cannabis":
-			logger.Info("entry cannabis gateway")
-			_, err := http.Get("http://172.30.0.5:8081/api/ping")
-			if err != nil {
-				c.AbortWithError(http.StatusBadRequest, err)
-				return
-			}
+			/*
+				_, err := http.Get("http://172.30.0.5:8081/api/ping")
+				if err != nil {
+					c.AbortWithError(http.StatusBadRequest, err)
+					return
+				}
+			*/
 			c.JSON(http.StatusOK, gin.H{
 				"message": "you can go to cannabis :)",
 			})

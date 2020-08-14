@@ -38,7 +38,7 @@ func Entry(c *gin.Context) {
 			return
 		} else {
 			ForbiddenPath(c)
-			c.Abort()
+			return
 		}
 	}
 

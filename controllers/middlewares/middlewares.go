@@ -33,7 +33,6 @@ func Entry(c *gin.Context) {
 				ForbiddenPath(c)
 				return
 			}
-
 			c.Next()
 			return
 		} else {
@@ -59,13 +58,20 @@ func allowedPath(reqToken []string, c *gin.Context) {
 		case "/new-account":
 			switch c.Request.Method {
 			case http.MethodPost:
-				w, err := http.Post("http://172.30.0.5:8081/api/new-account", "application/json", c.Request.Body)
+				w, err := http.Post("http://172.30.0.3:8081/api/new-account", "application/json", c.Request.Body)
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 					return
 				}
 
-				callAuthorize(&ctx, w.Header.Get("nick_name"), "account successfuly created", "wrong account or password, try again", c)
+				callAuthorize(
+					&ctx,
+					w.Header.Get("nick_name"),
+					w.Header.Get("account_id"),
+					"account successfuly created",
+					"account already exists",
+					c,
+				)
 				return
 			}
 		case "/login":
@@ -79,7 +85,14 @@ func allowedPath(reqToken []string, c *gin.Context) {
 					return
 				}
 
-				callAuthorize(&ctx, w.Header.Get("nick_name"), "successfully login", "wrong account or password, try again", c)
+				callAuthorize(
+					&ctx,
+					w.Header.Get("nick_name"),
+					w.Header.Get("account_id"),
+					"successfully login",
+					"wrong account or password, try again",
+					c,
+				)
 				return
 			}
 		}
@@ -91,13 +104,13 @@ func ForbiddenPath(c *gin.Context) {
 	c.AbortWithStatusJSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized"))
 }
 
-func callAuthorize(ctx *context.Context, nickName string, finalMessage string, errorMessage string, c *gin.Context) {
+func callAuthorize(ctx *context.Context, nickName string, accountId string, finalMessage string, errorMessage string, c *gin.Context) {
 	if nickName == "" {
 		c.AbortWithStatusJSON(http.StatusBadRequest, error_factory.NewBadRequestError(errorMessage))
 		return
 	}
 
-	jwt, restErr := authService.Authorize(nickName, *ctx)
+	jwt, restErr := authService.Authorize(nickName, accountId, *ctx)
 	if restErr != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, restErr)
 		return

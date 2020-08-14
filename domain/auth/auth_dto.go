@@ -11,15 +11,17 @@ import (
 )
 
 type Token struct {
-	Name string `json:"name"`
-	Uuid string `json:"_uuid"`
-	Jwt  string `json:"jwt"`
+	Name      string `json:"name"`
+	Uuid      string `json:"_uuid"`
+	Jwt       string `json:"jwt"`
+	AccountId string `json:"account_id"`
 }
 
-func New(name string) *Token {
+func New(name string, accountId string) *Token {
 	au := &Token{}
 	au.Uuid = uuid.NewV4().String()
 	au.Name = name
+	au.AccountId = accountId
 	return au
 }
 
@@ -28,6 +30,7 @@ func (au *Token) GenerateJWT() (string, *error_factory.RestErr) {
 	claims["authorized"] = true
 	claims["nick_name"] = au.Name
 	claims["uuid"] = au.Uuid
+	claims["account_id"] = au.AccountId
 
 	jwtPure := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -40,7 +43,7 @@ func (au *Token) GenerateJWT() (string, *error_factory.RestErr) {
 	return jwt, nil
 }
 
-func GetNickNameFromJWT(tokens string) (string, *error_factory.RestErr) {
+func GetValueFromJwtKey(tokens string, key string) (string, *error_factory.RestErr) {
 	jwts, err := jwt.Parse(tokens, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -53,7 +56,7 @@ func GetNickNameFromJWT(tokens string) (string, *error_factory.RestErr) {
 	}
 
 	claims := jwts.Claims.(jwt.MapClaims)
-	nickName := claims["nick_name"]
+	value := claims[key]
 
-	return (nickName).(string), nil
+	return (value).(string), nil
 }

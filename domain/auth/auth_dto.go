@@ -11,10 +11,11 @@ import (
 )
 
 type Token struct {
-	Name      string `json:"name"`
-	Uuid      string `json:"_uuid"`
-	Jwt       string `json:"jwt"`
-	AccountId string `json:"account_id"`
+	Name                 string `json:"name"`
+	Uuid                 string `json:"_uuid"`
+	Jwt                  string `json:"jwt"`
+	AccountId            string `json:"account_id"`
+	CannabisRepositoryId string `json:"cannabis_repository_id"`
 }
 
 func New(name string, accountId string) *Token {

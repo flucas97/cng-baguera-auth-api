@@ -24,6 +24,7 @@ func Entry(c *gin.Context) {
 	switch c.Request.RequestURI {
 	case "/login", "/new-account":
 		allowedPath(reqToken, c)
+		fmt.Println("passou allowed")
 		return
 	default:
 		if len(reqToken) != 0 {
@@ -67,7 +68,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 
 				jwt, restErr := authService.Authorize(w.Header.Get("nick_name"), ctx)
 				if restErr != nil {
-					c.AbortWithStatusJSON(http.StatusBadRequest, err)
+					c.AbortWithStatusJSON(http.StatusBadRequest, error_factory.NewBadRequestError("account name already exists"))
 					return
 				}
 
@@ -85,6 +86,29 @@ func allowedPath(reqToken []string, c *gin.Context) {
 			switch c.Request.Method {
 			case http.MethodGet:
 
+			case http.MethodPost:
+				w, err := http.Post("http://172.30.0.3:8081/api/validate", "application/json", c.Request.Body)
+				if err != nil {
+					fmt.Println("nao caiu")
+					c.AbortWithError(http.StatusBadRequest, err)
+					return
+				}
+
+				jwt, restErr := authService.Authorize(w.Header.Get("nick_name"), ctx)
+				if restErr != nil {
+					c.AbortWithStatusJSON(http.StatusBadRequest, restErr)
+					return
+				}
+
+				c.Header("Authorization", jwt)
+				c.AbortWithStatusJSON(
+					http.StatusOK,
+					gin.H{
+						"authorization": jwt,
+						"message":       "logged in",
+					},
+				)
+				return
 			}
 		}
 	}

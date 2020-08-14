@@ -12,6 +12,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	accountsServiceURI = "http://172.30.0.3:8081/api/"
+)
+
 var (
 	ctx         = context.Background()
 	authService = auth_service.AuthService
@@ -58,7 +62,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 		case "/new-account":
 			switch c.Request.Method {
 			case http.MethodPost:
-				w, err := http.Post("http://172.30.0.3:8081/api/new-account", "application/json", c.Request.Body)
+				w, err := http.Post(accountsServiceURI+"new-account", "application/json", c.Request.Body)
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 					return
@@ -76,10 +80,8 @@ func allowedPath(reqToken []string, c *gin.Context) {
 			}
 		case "/login":
 			switch c.Request.Method {
-			case http.MethodGet:
-
 			case http.MethodPost:
-				w, err := http.Post("http://172.30.0.3:8081/api/validate", "application/json", c.Request.Body)
+				w, err := http.Post(accountsServiceURI+"validate", "application/json", c.Request.Body)
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 					return

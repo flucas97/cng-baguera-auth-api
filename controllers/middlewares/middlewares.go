@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	accountsServiceURI = "http://172.30.0.3:8081/api/"
+	accountsServiceURI = "http://172.30.0.5:8081/api/"
 )
 
 var (

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/ping"
+	"github.com/flucas97/cng/cng-baguera-auth-api/domain/auth"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
 	"github.com/gin-gonic/gin"
 )
@@ -19,13 +20,6 @@ func Entry(c *gin.Context) {
 			ping.Ping(c)
 			return
 		case "/cannabis":
-			/*
-				_, err := http.Get("http://172.30.0.5:8081/api/ping")
-				if err != nil {
-					c.AbortWithError(http.StatusBadRequest, err)
-					return
-				}
-			*/
 			c.JSON(http.StatusOK, gin.H{
 				"message": "you can go to cannabis :)",
 			})
@@ -36,6 +30,23 @@ func Entry(c *gin.Context) {
 		}
 	case http.MethodPost:
 		switch URI {
+		case "/cannabis":
+			cRepoId, restErr := auth.GetValueFromJwtKey(c.Request.Header.Get("Authorization"), "cannabis_repository_id")
+			if restErr != nil {
+				c.AbortWithStatusJSON(http.StatusBadRequest, restErr)
+				return
+			}
+
+			fmt.Println(cRepoId)
+			r, err := http.Post("http://172.30.0.3:8083/api/new-cannabis", "application/json", c.Request.Body)
+			if err != nil {
+				fmt.Println(err)
+				c.AbortWithStatusJSON(http.StatusBadRequest, err)
+				return
+			}
+
+			c.JSON(http.StatusCreated, r)
+			return
 		default:
 			pathNotFound(c)
 			return

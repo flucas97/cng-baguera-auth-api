@@ -62,16 +62,18 @@ func allowedPath(reqToken []string, c *gin.Context) {
 		case "/new-account":
 			switch c.Request.Method {
 			case http.MethodPost:
-				w, err := http.Post(accountsServiceURI+"new-account", "application/json", c.Request.Body)
+				r, err := http.Post(accountsServiceURI+"new-account", "application/json", c.Request.Body)
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 					return
 				}
 
+				fmt.Println("cannabis repository ID", r.Header.Get("cannabis_repository_id"))
 				callAuthorize(
 					&ctx,
-					w.Header.Get("nick_name"),
-					w.Header.Get("account_id"),
+					r.Header.Get("nick_name"),
+					r.Header.Get("account_id"),
+					r.Header.Get("cannabis_repository_id"),
 					"account successfuly created",
 					"account already exists",
 					c,
@@ -81,7 +83,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 		case "/login":
 			switch c.Request.Method {
 			case http.MethodPost:
-				w, err := http.Post(accountsServiceURI+"validate", "application/json", c.Request.Body)
+				r, err := http.Post(accountsServiceURI+"validate", "application/json", c.Request.Body)
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 					return
@@ -89,8 +91,9 @@ func allowedPath(reqToken []string, c *gin.Context) {
 
 				callAuthorize(
 					&ctx,
-					w.Header.Get("nick_name"),
-					w.Header.Get("account_id"),
+					r.Header.Get("nick_name"),
+					r.Header.Get("account_id"),
+					r.Header.Get("cannabis_repository_id"),
 					"successfully login",
 					"wrong account or password, try again",
 					c,
@@ -109,13 +112,13 @@ func ForbiddenPath(c *gin.Context) {
 	*/
 }
 
-func callAuthorize(ctx *context.Context, nickName string, accountId string, finalMessage string, errorMessage string, c *gin.Context) {
+func callAuthorize(ctx *context.Context, nickName string, accountId string, cannabisRepositoryId string, finalMessage string, errorMessage string, c *gin.Context) {
 	if nickName == "" {
 		c.AbortWithStatusJSON(http.StatusBadRequest, error_factory.NewBadRequestError(errorMessage))
 		return
 	}
 
-	jwt, restErr := authService.Authorize(nickName, accountId, *ctx)
+	jwt, restErr := authService.Authorize(nickName, accountId, cannabisRepositoryId, *ctx)
 	if restErr != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, restErr)
 		return

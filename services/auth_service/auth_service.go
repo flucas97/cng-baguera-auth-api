@@ -12,14 +12,14 @@ var (
 )
 
 type authServiceInterface interface {
-	Authorize(string, string, context.Context) (string, *error_factory.RestErr)
+	Authorize(string, string, string, context.Context) (string, *error_factory.RestErr)
 	Validate(string, context.Context) (bool, *error_factory.RestErr)
 }
 
 type authService struct{}
 
-func (au *authService) Authorize(nickName string, accountId string, ctx context.Context) (string, *error_factory.RestErr) {
-	token := auth.New(nickName, accountId)
+func (au *authService) Authorize(nickName string, accountId string, cannabisRepositoryId string, ctx context.Context) (string, *error_factory.RestErr) {
+	token := auth.New(nickName, accountId, cannabisRepositoryId)
 
 	jwt, err := token.GenerateJWT()
 	if err != nil {

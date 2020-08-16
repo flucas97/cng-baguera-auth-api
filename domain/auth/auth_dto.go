@@ -18,11 +18,12 @@ type Token struct {
 	CannabisRepositoryId string `json:"cannabis_repository_id"`
 }
 
-func New(name string, accountId string) *Token {
+func New(name string, accountId string, cannabisRepositoryId string) *Token {
 	au := &Token{}
 	au.Uuid = uuid.NewV4().String()
 	au.Name = name
 	au.AccountId = accountId
+	au.CannabisRepositoryId = cannabisRepositoryId
 	return au
 }
 
@@ -32,6 +33,7 @@ func (au *Token) GenerateJWT() (string, *error_factory.RestErr) {
 	claims["nick_name"] = au.Name
 	claims["uuid"] = au.Uuid
 	claims["account_id"] = au.AccountId
+	claims["cannabis_repository_id"] = au.CannabisRepositoryId
 
 	jwtPure := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 

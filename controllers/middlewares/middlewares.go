@@ -68,7 +68,6 @@ func allowedPath(reqToken []string, c *gin.Context) {
 					return
 				}
 
-				fmt.Println("cannabis repository ID", r.Header.Get("cannabis_repository_id"))
 				callAuthorize(
 					&ctx,
 					r.Header.Get("nick_name"),

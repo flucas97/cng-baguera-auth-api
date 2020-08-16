@@ -12,13 +12,13 @@ var (
 )
 
 type authServiceInterface interface {
-	Authorize(string, string, string, context.Context) (string, *error_factory.RestErr)
-	Validate(string, context.Context) (bool, *error_factory.RestErr)
+	Authorize(context.Context, string, string, string) (string, *error_factory.RestErr)
+	Validate(context.Context, string) (bool, *error_factory.RestErr)
 }
 
 type authService struct{}
 
-func (au *authService) Authorize(nickName string, accountId string, cannabisRepositoryId string, ctx context.Context) (string, *error_factory.RestErr) {
+func (au *authService) Authorize(ctx context.Context, nickName string, accountId string, cannabisRepositoryId string) (string, *error_factory.RestErr) {
 	token := auth.New(nickName, accountId, cannabisRepositoryId)
 
 	jwt, err := token.GenerateJWT()
@@ -33,7 +33,7 @@ func (au *authService) Authorize(nickName string, accountId string, cannabisRepo
 	return jwt, nil
 }
 
-func (au *authService) Validate(jwt string, ctx context.Context) (bool, *error_factory.RestErr) {
+func (au *authService) Validate(ctx context.Context, jwt string) (bool, *error_factory.RestErr) {
 	nickName, err := auth.GetValueFromJwtKey(jwt, "nick_name")
 	if err != nil {
 		return false, err

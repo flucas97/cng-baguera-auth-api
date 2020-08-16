@@ -32,7 +32,7 @@ func Entry(c *gin.Context) {
 		return
 	default:
 		if len(reqToken) != 0 {
-			found, err := authService.Validate(reqToken[0], ctx)
+			found, err := authService.Validate(ctx, reqToken[0])
 			if err != nil || !found {
 				ForbiddenPath(c)
 				return
@@ -49,7 +49,7 @@ func Entry(c *gin.Context) {
 
 func allowedPath(reqToken []string, c *gin.Context) {
 	if len(reqToken) != 0 {
-		ok, err := authService.Validate(reqToken[0], ctx)
+		ok, err := authService.Validate(ctx, reqToken[0])
 		if err != nil || !ok {
 			ForbiddenPath(c)
 			return
@@ -117,7 +117,7 @@ func callAuthorize(ctx *context.Context, nickName string, accountId string, cann
 		return
 	}
 
-	jwt, restErr := authService.Authorize(nickName, accountId, cannabisRepositoryId, *ctx)
+	jwt, restErr := authService.Authorize(*ctx, nickName, accountId, cannabisRepositoryId)
 	if restErr != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, restErr)
 		return

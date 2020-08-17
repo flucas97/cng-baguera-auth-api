@@ -14,6 +14,9 @@ services:
     restart: always
     expose:
       - "8082"
+    depends_on: 
+      - db
+      - cachedb
 
   cachedb:
     image: redis
@@ -21,6 +24,17 @@ services:
     ports:
       - "6379:6379"
 
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "cng_baguera"
+    ports:
+      - 5434:5432
+    volumes:
+      - ./db/auth/psql_db/schema:/docker-entrypoint-initdb.d
+  
 networks:
   default:
     external:

@@ -37,7 +37,7 @@ func Entry(c *gin.Context) {
 				return
 			}
 
-			fmt.Println(cRepoId)
+			fmt.Println("chegou aqui", cRepoId)
 			r, err := http.Post("http://172.30.0.3:8083/api/new-cannabis", "application/json", c.Request.Body)
 			if err != nil {
 				fmt.Println(err)

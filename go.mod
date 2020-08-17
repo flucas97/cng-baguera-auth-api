@@ -8,6 +8,7 @@ require (
 	github.com/go-redis/redis/v8 v8.0.0-beta.7
 	github.com/gomodule/redigo v1.8.2 // indirect
 	github.com/google/uuid v1.1.1 // indirect
+	github.com/lib/pq v1.8.0
 	github.com/satori/go.uuid v1.2.0
 	go.uber.org/zap v1.15.0
 )

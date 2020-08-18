@@ -61,6 +61,6 @@ func GetValueFromJwtKey(tokens string, key string) (string, *error_factory.RestE
 	claims := jwts.Claims.(jwt.MapClaims)
 	value := claims[key]
 
-	fmt.Printf("jwt %v ", (value).(string))
+	fmt.Printf("jwt @@@@ REPO ID %v \n", claims)
 	return (value).(string), nil
 }

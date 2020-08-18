@@ -15,7 +15,7 @@ services:
     expose:
       - "8082"
     depends_on: 
-      - db
+      - bagueradb
       - cachedb
 
   cachedb:
@@ -24,7 +24,7 @@ services:
     ports:
       - "6379:6379"
 
-  db:
+  bagueradb:
     image: postgres:latest
     environment:
       POSTGRES_USER: "postgres"

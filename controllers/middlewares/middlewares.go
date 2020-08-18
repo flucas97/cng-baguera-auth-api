@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	accountsServiceURI = "http://172.30.0.7:8081/api/"
+	accountsServiceURI = "http://172.30.0.8:8081/api/"
 )
 
 var (
@@ -67,12 +67,11 @@ func allowedPath(reqToken []string, c *gin.Context) {
 					c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 					return
 				}
-
 				callAuthorize(
 					&ctx,
 					r.Header.Get("nick_name"),
 					r.Header.Get("account_id"),
-					r.Header.Get("cannabis_repository_id"),
+					r.Header.Get("repository_id"),
 					"account successfuly created",
 					"account already exists",
 					c,

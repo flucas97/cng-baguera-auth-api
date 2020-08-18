@@ -1,16 +1,12 @@
 package gateway
 
 import (
-	"bytes"
 	"fmt"
-	"io"
 	"net/http"
-	"time"
 
 	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/ping"
-	"github.com/flucas97/cng/cng-baguera-auth-api/domain/auth"
+	"github.com/flucas97/cng/cng-baguera-auth-api/services/routes_service"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
-	"github.com/flucas97/cng/cng-baguera-auth-api/utils/logger"
 	"github.com/gin-gonic/gin"
 )
 
@@ -35,14 +31,14 @@ func Entry(c *gin.Context) {
 	case http.MethodPost:
 		switch URI {
 		case "/cannabis":
-			cRepoId, restErr := auth.GetValueFromJwtKey(c.Request.Header.Get("Authorization"), "cannabis_repository_id")
-			if restErr != nil {
-				c.AbortWithStatusJSON(http.StatusBadRequest, restErr)
+			jwt := c.Request.Header.Get("Authorization")
+			r, err := routes_service.RoutesService.CallCannabis("POST", "http://172.30.0.3:8083/api/new-cannabis", c.Request.Body, jwt)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, err)
 				return
 			}
-			resp := callCannabis(c.Request.Body, cRepoId)
 
-			c.JSON(http.StatusCreated, resp)
+			c.JSON(http.StatusCreated, r)
 			return
 		default:
 			pathNotFound(c)
@@ -75,28 +71,4 @@ func Entry(c *gin.Context) {
 func pathNotFound(c *gin.Context) {
 	c.JSON(http.StatusNotFound, error_factory.NewNotFoundError(fmt.Sprintf("path %v not found :(", c.Request.RequestURI)))
 	c.Abort()
-}
-
-func callCannabis(body io.ReadCloser, cRepoId string) string {
-	req, err := http.NewRequest("POST", "http://172.30.0.3:8083/api/new-cannabis", body)
-	if err != nil {
-		logger.Error("error creating request", err)
-		return ""
-	}
-
-	req.Header.Set("cannabis_repository_id", cRepoId)
-	client := &http.Client{Timeout: time.Second * 10}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		logger.Error("error making request", err)
-		return ""
-	}
-	defer resp.Body.Close()
-
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(resp.Body)
-	newStr := buf.String()
-
-	return newStr
 }

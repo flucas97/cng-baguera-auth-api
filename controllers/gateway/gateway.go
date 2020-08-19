@@ -32,13 +32,13 @@ func Entry(c *gin.Context) {
 		switch URI {
 		case "/cannabis":
 			jwt := c.Request.Header.Get("Authorization")
-			r, err := routes_service.RoutesService.CallCannabis("POST", "http://172.30.0.8:8083/api/new-cannabis", c.Request.Body, jwt)
+			result, err := routes_service.RoutesService.CallCannabis("POST", "http://172.30.0.8:8083/api/new-cannabis", c.Request.Body, jwt)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, err)
 				return
 			}
 
-			c.JSON(http.StatusCreated, r)
+			c.JSON(http.StatusCreated, result)
 			return
 		default:
 			pathNotFound(c)

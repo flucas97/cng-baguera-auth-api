@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/flucas97/cng/cng-baguera-auth-api/controllers/ping"
-	"github.com/flucas97/cng/cng-baguera-auth-api/services/routes_service"
+	"github.com/flucas97/cng/cng-baguera-auth-api/services/cannabis_service"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +21,7 @@ func Entry(c *gin.Context) {
 			return
 		case "/cannabis":
 			jwt := c.Request.Header.Get("Authorization")
-			result, err := routes_service.RoutesService.CallCannabis(nil, jwt)
+			result, err := cannabis_service.CannabisService.GetAllCannabis(jwt)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, err)
 				return
@@ -38,7 +38,7 @@ func Entry(c *gin.Context) {
 		switch URI {
 		case "/cannabis":
 			jwt := c.Request.Header.Get("Authorization")
-			result, err := routes_service.RoutesService.CallCannabis(c.Request.Body, jwt)
+			result, err := cannabis_service.CannabisService.New(c.Request.Body, jwt)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, err)
 				return

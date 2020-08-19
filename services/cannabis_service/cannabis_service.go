@@ -7,13 +7,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/flucas97/cng/cng-baguera-auth-api/domain/auth"
 	"github.com/flucas97/cng/cng-baguera-auth-api/domain/cannabis"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/logger"
 )
 
 const (
-	cannabisBaseUrl = "http://172.30.0.8:8083/api"
+	cannabisBaseUrl = "http://172.30.0.7:8083/api"
 )
 
 var CannabisService cannabisServiceInterface = &cannabisService{}
@@ -21,10 +22,16 @@ var CannabisService cannabisServiceInterface = &cannabisService{}
 type cannabisService struct{}
 
 type cannabisServiceInterface interface {
-	New(body io.ReadCloser, repositoryId string) (*cannabis.Cannabis, *error_factory.RestErr)
+	New(io.ReadCloser, string) (*cannabis.Cannabis, *error_factory.RestErr)
+	GetAllCannabis(jwt string) ([]cannabis.Cannabis, *error_factory.RestErr)
 }
 
-func (cs cannabisService) New(body io.ReadCloser, repositoryId string) (*cannabis.Cannabis, *error_factory.RestErr) {
+func (cs cannabisService) New(body io.ReadCloser, jwt string) (*cannabis.Cannabis, *error_factory.RestErr) {
+	repositoryId, err := auth.GetValueFromJwtKey(jwt, "cannabis_repository_id")
+	if err != nil {
+		return nil, err
+	}
+
 	var (
 		cannabis = cannabis.Cannabis{}
 	)
@@ -46,12 +53,17 @@ func GetCannabis() {
 
 }
 
-func GetAllCannabis(jwt string, repositoryId string) ([]cannabis.Cannabis, *error_factory.RestErr) {
+func (cs cannabisService) GetAllCannabis(jwt string) ([]cannabis.Cannabis, *error_factory.RestErr) {
+	repositoryId, err := auth.GetValueFromJwtKey(jwt, "cannabis_repository_id")
+	if err != nil {
+		return nil, err
+	}
+
 	var (
 		cannabis = []cannabis.Cannabis{}
 	)
 
-	jsonResponse, err := makeRequest(repositoryId, "GET", "cannabis", nil)
+	jsonResponse, err := makeRequest(repositoryId, "GET", "/cannabis", nil)
 	if err != nil {
 		return nil, err
 	}

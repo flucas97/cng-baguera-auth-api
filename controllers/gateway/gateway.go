@@ -20,9 +20,15 @@ func Entry(c *gin.Context) {
 			ping.Ping(c)
 			return
 		case "/cannabis":
-			c.JSON(http.StatusOK, gin.H{
-				"message": "you can go to cannabis :)",
-			})
+			jwt := c.Request.Header.Get("Authorization")
+			result, err := routes_service.RoutesService.CallCannabis(nil, jwt)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, err)
+				return
+			}
+
+			c.JSON(http.StatusCreated, result)
+
 			return
 		default:
 			pathNotFound(c)
@@ -32,7 +38,7 @@ func Entry(c *gin.Context) {
 		switch URI {
 		case "/cannabis":
 			jwt := c.Request.Header.Get("Authorization")
-			result, err := routes_service.RoutesService.CallCannabis("POST", "http://172.30.0.8:8083/api/new-cannabis", c.Request.Body, jwt)
+			result, err := routes_service.RoutesService.CallCannabis(c.Request.Body, jwt)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, err)
 				return

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/flucas97/cng/cng-baguera-auth-api/services/auth_service"
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/error_factory"
@@ -12,13 +13,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	accountsServiceURI = "http://172.30.0.5:8081/api/"
-)
-
 var (
-	ctx         = context.Background()
-	authService = auth_service.AuthService
+	accountsServiceURI = os.Getenv("ACCOUNTS_BASE_URL")
+	ctx                = context.Background()
+	authService        = auth_service.AuthService
 )
 
 func Entry(c *gin.Context) {

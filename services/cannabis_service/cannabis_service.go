@@ -2,9 +2,11 @@ package cannabis_service
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/flucas97/cng/cng-baguera-auth-api/domain/auth"
@@ -13,11 +15,10 @@ import (
 	"github.com/flucas97/cng/cng-baguera-auth-api/utils/logger"
 )
 
-const (
-	cannabisBaseUrl = "http://172.30.0.7:8083/api"
+var (
+	cannabisBaseUrl                          = os.Getenv("CANNABIS_BASE_URL")
+	CannabisService cannabisServiceInterface = &cannabisService{}
 )
-
-var CannabisService cannabisServiceInterface = &cannabisService{}
 
 type cannabisService struct{}
 
@@ -36,7 +37,7 @@ func (cs cannabisService) New(body io.ReadCloser, jwt string) (*cannabis.Cannabi
 		cannabis = cannabis.Cannabis{}
 	)
 
-	jsonResponse, err := makeRequest(repositoryId, "POST", "/new-cannabis", body)
+	jsonResponse, err := makeRequest(repositoryId, "POST", "new-cannabis", body)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +46,7 @@ func (cs cannabisService) New(body io.ReadCloser, jwt string) (*cannabis.Cannabi
 	if e != nil {
 		return nil, error_factory.NewInternalServerError(e.Error())
 	}
-
+	fmt.Println(cannabis)
 	return &cannabis, nil
 }
 

@@ -2,11 +2,15 @@
 
 ### Avaliable routes:
 POST /new-account
+
 POST /login
+
 GET /cannabis
+
 POST /cannabis
 
 #### Check service status
+
 GET /ping
 
 ### Start the project running

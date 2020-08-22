@@ -67,9 +67,9 @@ func allowedPath(reqToken []string, c *gin.Context) {
 				}
 				callAuthorize(
 					&ctx,
-					r.Header.Get("nick_name"),
-					r.Header.Get("account_id"),
-					r.Header.Get("repository_id"),
+					r.Header.Get("Nick-name"),
+					r.Header.Get("Account-id"),
+					r.Header.Get("Repository-id"),
 					"account successfuly created",
 					"account already exists",
 					c,
@@ -87,9 +87,9 @@ func allowedPath(reqToken []string, c *gin.Context) {
 
 				callAuthorize(
 					&ctx,
-					r.Header.Get("nick_name"),
-					r.Header.Get("account_id"),
-					r.Header.Get("cannabis_repository_id"),
+					r.Header.Get("Nick-name"),
+					r.Header.Get("Account-id"),
+					r.Header.Get("Repository-id"),
 					"successfully login",
 					"wrong account or password, try again",
 					c,

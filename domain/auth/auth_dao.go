@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	queryNewAccount = ("INSERT INTO auth (account_id, jwt, nickname) VALUES ($1, $2, $3);")
+	queryNewAccount = ("INSERT INTO auth (account_id, jwt, nickname) VALUES ($1, $2, $3) ON CONFLICT (nickname) DO UPDATE SET jwt=$2;")
 	querySearchJwt  = ("SELECT jwt FROM auth WHERE nickname=$1;")
 )
 

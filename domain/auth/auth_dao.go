@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	queryNewAccount = ("INSERT INTO auth (account_id, jwt, nickname) VALUES ($1, $2, $3) ON CONFLICT (nickname) DO UPDATE SET jwt=$2;")
+	queryPersistJwt = ("INSERT INTO auth (account_id, jwt, nickname) VALUES ($1, $2, $3) ON CONFLICT (nickname) DO UPDATE SET jwt=$2;")
 	querySearchJwt  = ("SELECT jwt FROM auth WHERE nickname=$1;")
 )
 
@@ -22,7 +22,7 @@ func (token *Token) Authorize(ctx context.Context) *error_factory.RestErr {
 		return error_factory.NewInternalServerError(err.Error())
 	}
 
-	_ = psql_db.Client.QueryRow(queryNewAccount, token.AccountId, token.Jwt, token.Name)
+	_ = psql_db.Client.QueryRow(queryPersistJwt, token.AccountId, token.Jwt, token.Name)
 
 	return nil
 }

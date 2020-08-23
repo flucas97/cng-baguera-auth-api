@@ -10,6 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var (
+	cs = cannabis_service.CannabisService
+)
+
 func Entry(c *gin.Context) {
 	URI := c.Request.RequestURI
 
@@ -21,7 +25,7 @@ func Entry(c *gin.Context) {
 			return
 		case "/cannabis":
 			jwt := c.Request.Header.Get("Authorization")
-			result, err := cannabis_service.CannabisService.GetAllCannabis(jwt)
+			result, err := cs.FindAllCannabis(jwt)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, err)
 				return
@@ -38,7 +42,7 @@ func Entry(c *gin.Context) {
 		switch URI {
 		case "/cannabis":
 			jwt := c.Request.Header.Get("Authorization")
-			result, err := cannabis_service.CannabisService.New(c.Request.Body, jwt)
+			result, err := cs.New(c.Request.Body, jwt)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, err)
 				return

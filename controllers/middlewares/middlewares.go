@@ -84,7 +84,6 @@ func allowedPath(reqToken []string, c *gin.Context) {
 					c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 					return
 				}
-
 				callAuthorize(
 					&ctx,
 					r.Header.Get("Nick-name"),

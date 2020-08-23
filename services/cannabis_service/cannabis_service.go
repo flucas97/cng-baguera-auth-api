@@ -24,13 +24,17 @@ type cannabisService struct{}
 
 type cannabisServiceInterface interface {
 	New(io.ReadCloser, string) (*cannabis.Cannabis, *error_factory.RestErr)
-	GetAllCannabis(jwt string) ([]cannabis.Cannabis, *error_factory.RestErr)
+	FindAllCannabis(jwt string) ([]cannabis.Cannabis, *error_factory.RestErr)
 }
 
 func (cs cannabisService) New(body io.ReadCloser, jwt string) (*cannabis.Cannabis, *error_factory.RestErr) {
 	repositoryId, err := auth.GetValueFromJwtKey(jwt, "cannabis_repository_id")
 	if err != nil {
 		return nil, err
+	}
+	if repositoryId == "" {
+		logger.Error("error casting repository_id from JWT", nil)
+		return nil, error_factory.NewBadRequestError("cannot find repository_id from JWT")
 	}
 
 	var (
@@ -54,7 +58,7 @@ func GetCannabis() {
 
 }
 
-func (cs cannabisService) GetAllCannabis(jwt string) ([]cannabis.Cannabis, *error_factory.RestErr) {
+func (cs cannabisService) FindAllCannabis(jwt string) ([]cannabis.Cannabis, *error_factory.RestErr) {
 	repositoryId, err := auth.GetValueFromJwtKey(jwt, "cannabis_repository_id")
 	if err != nil {
 		return nil, err
@@ -64,7 +68,7 @@ func (cs cannabisService) GetAllCannabis(jwt string) ([]cannabis.Cannabis, *erro
 		cannabis = []cannabis.Cannabis{}
 	)
 
-	jsonResponse, err := makeRequest(repositoryId, "GET", "/cannabis", nil)
+	jsonResponse, err := makeRequest(repositoryId, "GET", "cannabis", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +95,7 @@ func makeRequest(repositoryId string, method string, path string, body io.ReadCl
 		return nil, error_factory.NewInternalServerError(err.Error())
 	}
 
-	req.Header.Set("Cannabis-repository-id", repositoryId)
+	req.Header.Set("Repository-id", repositoryId)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{

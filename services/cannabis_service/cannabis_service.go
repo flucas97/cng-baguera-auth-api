@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/flucas97/cng/cng-baguera-auth-api/domain/auth"
@@ -71,6 +72,9 @@ func (cs cannabisService) FindAllCannabis(jwt string) ([]cannabis.Cannabis, *err
 	jsonResponse, err := makeRequest(repositoryId, "GET", "cannabis", nil)
 	if err != nil {
 		return nil, err
+	}
+	if strings.Contains(string(jsonResponse), "no cannabis found") {
+		return nil, error_factory.NewNotFoundError("no cannabis found")
 	}
 
 	e := json.Unmarshal([]byte(jsonResponse), &cannabis)

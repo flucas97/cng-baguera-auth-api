@@ -15,6 +15,7 @@ const (
 	querySearchJwt  = ("SELECT jwt FROM auth WHERE nickname=$1;")
 )
 
+// Authorize persist into Redis and Postgres the new Jwt value for the account
 func (token *Token) Authorize(ctx context.Context) *error_factory.RestErr {
 	_, err := redis_db.Client.Set(ctx, token.Name, token.Jwt, 0).Result()
 	if err != nil {
@@ -22,11 +23,12 @@ func (token *Token) Authorize(ctx context.Context) *error_factory.RestErr {
 		return error_factory.NewInternalServerError(err.Error())
 	}
 
-	_ = psql_db.Client.QueryRow(queryPersistJwt, token.AccountId, token.Jwt, token.Name)
+	_ = psql_db.Client.QueryRow(queryPersistJwt, token.AccountID, token.Jwt, token.Name)
 
 	return nil
 }
 
+// Validate searchs in Redis if this account has a cached value, if it doesnt is searched into Postgres, the account's jwt is compared to the jwt sent from the request
 func Validate(ctx context.Context, nickName string, jwtSent string) (bool, *error_factory.RestErr) {
 	validJWT, err := redis_db.Client.Get(ctx, nickName).Result()
 	if err != nil {

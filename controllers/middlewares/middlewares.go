@@ -19,6 +19,7 @@ var (
 	authService        = auth_service.AuthService
 )
 
+// Entry is the auth entrypoint validate informations about the user before let him use the service
 func Entry(c *gin.Context) {
 	var (
 		reqToken = c.Request.Header["Authorization"]
@@ -99,6 +100,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 	}
 }
 
+// FobiddenPath
 func ForbiddenPath(c *gin.Context) {
 	logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s", c.ClientIP()))
 	c.AbortWithStatusJSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized"))

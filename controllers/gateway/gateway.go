@@ -14,6 +14,7 @@ var (
 	cs = cannabis_service.CannabisService
 )
 
+// Entry
 func Entry(c *gin.Context) {
 	URI := c.Request.RequestURI
 

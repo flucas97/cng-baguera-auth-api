@@ -26,7 +26,7 @@ func Entry(c *gin.Context) {
 	)
 
 	switch c.Request.RequestURI {
-	case "/login", "/new-account":
+	case "/login", "/signup":
 		allowedPath(reqToken, c)
 		return
 	default:
@@ -58,7 +58,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 		return
 	} else {
 		switch c.Request.RequestURI {
-		case "/new-account":
+		case "/signup":
 			switch c.Request.Method {
 			case http.MethodPost:
 				r, err := http.Post(accountsServiceURI+"new-account", "application/json", c.Request.Body)
@@ -71,8 +71,8 @@ func allowedPath(reqToken []string, c *gin.Context) {
 					r.Header.Get("Nick-name"),
 					r.Header.Get("Account-id"),
 					r.Header.Get("Repository-id"),
-					"account successfuly created",
-					"account already exists",
+					"account successfuly created.",
+					"account already exists.",
 					c,
 				)
 				return
@@ -90,8 +90,8 @@ func allowedPath(reqToken []string, c *gin.Context) {
 					r.Header.Get("Nick-name"),
 					r.Header.Get("Account-id"),
 					r.Header.Get("Repository-id"),
-					"successfully login",
-					"wrong account or password, try again",
+					"successfully login.",
+					"wrong account or password, try again.",
 					c,
 				)
 				return
@@ -102,8 +102,8 @@ func allowedPath(reqToken []string, c *gin.Context) {
 
 // FobiddenPath
 func ForbiddenPath(c *gin.Context) {
-	logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s", c.ClientIP()))
-	c.AbortWithStatusJSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized"))
+	logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s.", c.ClientIP()))
+	c.AbortWithStatusJSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized."))
 	/*
 		TODO: clear token from cookie/storage
 	*/
@@ -111,7 +111,7 @@ func ForbiddenPath(c *gin.Context) {
 
 func callAuthorize(ctx *context.Context, nickName string, accountId string, cannabisRepositoryId string, finalMessage string, errorMessage string, c *gin.Context) {
 	if nickName == "" {
-		c.AbortWithStatusJSON(http.StatusBadRequest, error_factory.NewBadRequestError(errorMessage))
+		c.AbortWithStatusJSON(http.StatusBadRequest, error_factory.NewBadRequestError("invalid nickname."))
 		return
 	}
 

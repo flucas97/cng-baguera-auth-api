@@ -60,7 +60,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 		case "/signup":
 			switch c.Request.Method {
 			case http.MethodPost:
-				r, err := http.Post(accountsServiceURI+"new-account", "application/json", c.Request.Body)
+				r, err := http.Post(accountsServiceURI+"signup", "application/json", c.Request.Body)
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 					return

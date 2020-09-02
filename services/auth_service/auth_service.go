@@ -18,8 +18,8 @@ type authServiceInterface interface {
 
 type authService struct{}
 
-func (au *authService) Authorize(ctx context.Context, nickName string, accountId string, cannabisRepositoryId string) (string, *error_factory.RestErr) {
-	token := auth.New(nickName, accountId, cannabisRepositoryId)
+func (au *authService) Authorize(ctx context.Context, nickName string, accountID string, cannabisRepositoryID string) (string, *error_factory.RestErr) {
+	token := auth.New(nickName, accountID, cannabisRepositoryID)
 
 	jwt, err := token.GenerateJWT()
 	if err != nil {

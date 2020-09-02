@@ -19,7 +19,7 @@ var (
 	authService        = auth_service.AuthService
 )
 
-// Entry is the auth entrypoint validate informations about the user before let him use the service
+// Entry validate  user informations before authorize to use the rest of the service
 func Entry(c *gin.Context) {
 	var (
 		reqToken = c.Request.Header["Authorization"]
@@ -53,7 +53,6 @@ func allowedPath(reqToken []string, c *gin.Context) {
 			ForbiddenPath(c)
 			return
 		}
-
 		c.AbortWithStatusJSON(http.StatusFound, success_response.Found("already logged in"))
 		return
 	} else {
@@ -100,7 +99,7 @@ func allowedPath(reqToken []string, c *gin.Context) {
 	}
 }
 
-// FobiddenPath
+// ForbiddenPath blocks the request if its not authorized
 func ForbiddenPath(c *gin.Context) {
 	logger.MiddlewareAttempt(fmt.Sprintf("attempt to enter from IP %s.", c.ClientIP()))
 	c.AbortWithStatusJSON(http.StatusForbidden, error_factory.NewBadRequestError("not authorized."))
@@ -109,13 +108,13 @@ func ForbiddenPath(c *gin.Context) {
 	*/
 }
 
-func callAuthorize(ctx *context.Context, nickName string, accountId string, cannabisRepositoryId string, finalMessage string, errorMessage string, c *gin.Context) {
+func callAuthorize(ctx *context.Context, nickName string, accountID string, cannabisRepositoryID string, finalMessage string, errorMessage string, c *gin.Context) {
 	if nickName == "" {
-		c.AbortWithStatusJSON(http.StatusBadRequest, error_factory.NewBadRequestError("invalid nickname."))
+		c.AbortWithStatusJSON(http.StatusBadRequest, error_factory.NewBadRequestError(errorMessage))
 		return
 	}
 
-	jwt, restErr := authService.Authorize(*ctx, nickName, accountId, cannabisRepositoryId)
+	jwt, restErr := authService.Authorize(*ctx, nickName, accountID, cannabisRepositoryID)
 	if restErr != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, restErr)
 		return

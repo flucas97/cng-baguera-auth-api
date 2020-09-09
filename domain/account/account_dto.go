@@ -1,5 +1,6 @@
 package account
 
+// Account model, represetantion of domain in Account service
 type Account struct {
 	ID                   int64    `json:"id"`
 	Name                 string   `json:"name"`

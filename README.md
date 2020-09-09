@@ -1,7 +1,7 @@
 # {CNG} Baguera Auth Gateway
 
 ### Avaliable routes:
-POST /new-account
+POST /signup
 
 POST /login
 

@@ -14,7 +14,7 @@ var (
 	cs = cannabis_service.CannabisService
 )
 
-// Entry
+// Entry is the second middleware for the request, after all validations about JWT
 func Entry(c *gin.Context) {
 	URI := c.Request.RequestURI
 
